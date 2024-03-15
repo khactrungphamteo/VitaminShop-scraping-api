@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -20,7 +21,7 @@ public class ScrapingController {
     }
 
     @GetMapping(path = "/products")
-    public Set<ProductDto> getProducts() throws IOException {
+    public List<ProductDto> getProducts() throws IOException {
         return this.scrapingService.extractProducts();
     }
 }

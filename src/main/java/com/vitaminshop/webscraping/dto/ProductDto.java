@@ -6,5 +6,5 @@ import lombok.Data;
 public class ProductDto {
     String imageLink;
     String price;
-    String title;
+    String description;
 }
