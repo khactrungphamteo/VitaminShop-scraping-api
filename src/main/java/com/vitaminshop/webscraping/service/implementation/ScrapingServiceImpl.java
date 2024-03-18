@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 
 @Service
 public class ScrapingServiceImpl implements ScrapingService {
@@ -28,8 +26,14 @@ public class ScrapingServiceImpl implements ScrapingService {
     @Override
     public List<ProductDto> extractProducts() throws IOException {
         List<ProductDto> productDtos = new ArrayList<>();
-        Document document = Jsoup.connect(url).get();
-        Elements products = document.getElementsByClass("product-tile-set");
+        Elements products = null;
+        StringBuilder vitaminUrl = new StringBuilder(url);
+        for (int currentPage = 1; currentPage <= 5; currentPage++) {
+            vitaminUrl.append("?currentPage=");
+            vitaminUrl.append(currentPage);
+            Document document = Jsoup.connect(url).get();
+            products = document.getElementsByClass("product-tile-set");
+        }
 
         for (Element product : products) {
             try {
@@ -42,6 +46,7 @@ public class ScrapingServiceImpl implements ScrapingService {
                 if (imageLinkText.isEmpty()) {
                     imageLinkText = imageLink.attr("data-src");
                 }
+
                 productDto.setDescription(description.text());
                 productDto.setPrice(price.text());
                 productDto.setImageLink(imageLinkText);
