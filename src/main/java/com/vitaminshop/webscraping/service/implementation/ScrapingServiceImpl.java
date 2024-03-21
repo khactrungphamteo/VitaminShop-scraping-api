@@ -31,33 +31,33 @@ public class ScrapingServiceImpl implements ScrapingService {
         for (int currentPage = 1; currentPage <= 5; currentPage++) {
             vitaminUrl.append("?currentPage=");
             vitaminUrl.append(currentPage);
-            Document document = Jsoup.connect(url).get();
+            Document document = Jsoup.connect(String.valueOf(vitaminUrl)).get();
             products = document.getElementsByClass("product-tile-set");
-        }
 
-        for (Element product : products) {
-            try {
-                String imageLinkText = "";
-                ProductDto productDto = new ProductDto();
-                Element description = product.getElementsByClass("description").get(0);
-                Element price = product.getElementsByClass("price").get(0);
-                Element imageLink = product.getElementsByClass("img-responsive").get(0);
-                imageLinkText = imageLink.attr("src");
-                if (imageLinkText.isEmpty()) {
-                    imageLinkText = imageLink.attr("data-src");
+            for (Element product : products) {
+                try {
+                    String imageLinkText = "";
+                    ProductDto productDto = new ProductDto();
+                    Element description = product.getElementsByClass("description").get(0);
+                    Element price = product.getElementsByClass("price").get(0);
+                    Element imageLink = product.getElementsByClass("img-responsive").get(0);
+                    imageLinkText = imageLink.attr("src");
+                    if (imageLinkText.isEmpty()) {
+                        imageLinkText = imageLink.attr("data-src");
+                    }
+
+                    productDto.setDescription(description.text());
+                    productDto.setPrice(price.text());
+                    productDto.setImageLink(imageLinkText);
+                    productDtos.add(productDto);
+                } catch (Exception e) {
+                    this.logger.error(String.valueOf(e));
                 }
-
-                productDto.setDescription(description.text());
-                productDto.setPrice(price.text());
-                productDto.setImageLink(imageLinkText);
-                productDtos.add(productDto);
-            } catch (Exception e) {
-                this.logger.error(String.valueOf(e));
             }
+
+            vitaminUrl = new StringBuilder(url);
         }
 
         return productDtos;
     }
-
-
 }
